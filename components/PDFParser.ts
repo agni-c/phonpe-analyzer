@@ -50,7 +50,7 @@ export class PDFParser {
       // Process each section after the header
       sections.forEach(section => {
         // Use regex to find transaction patterns
-        const transactionPattern = /(\w{3} \d{2}, \d{4} \d{2}:\d{2} (?:am|pm))\s+(\w+)\s+₹\s*([\d,]+(?:\.\d{2})?)\s+(.+?)(?=Transaction ID|$)/gis;
+        const transactionPattern = /(\w{3} \d{2}, \d{4} \d{2}:\d{2} (?:am|pm))\s+(\w+)\s+₹\s*([\d,]+(?:\.\d{2})?)\s+(.+?)(?=Transaction ID|$)/gi;
         const matches = section.matchAll(transactionPattern);
 
         for (const match of matches) {

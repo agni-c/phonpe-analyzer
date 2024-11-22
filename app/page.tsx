@@ -7,18 +7,46 @@ import TransactionSummary from '@/components/TransactionSummary'
 import TransactionChart from '@/components/TransactionChart'
 import CategoryPieChart from '@/components/CategoryPieChart'
 
-export default function Home() {
-  const [analysisData, setAnalysisData] = useState<any>(null)
+interface Transaction {
+  Date: string;
+  Amount: string;
+  Description: string;
+}
 
-  const processData = (data: any[]) => {
+interface TransactionSummary {
+  totalTransactions: number;
+  totalAmount: number;
+  averageAmount: number;
+}
+
+interface ChartData {
+  date: string;
+  amount: number;
+}
+
+interface CategoryData {
+  name: string;
+  value: number;
+}
+
+interface AnalysisData {
+  summary: TransactionSummary;
+  transactionChart: ChartData[];
+  categoryPieChart: CategoryData[];
+}
+
+export default function Home() {
+  const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null)
+
+  const processData = (data: Transaction[]) => {
     // Calculate total transactions and amount
     const totalTransactions = data.length
     const totalAmount = data.reduce((sum, transaction) => sum + parseFloat(transaction.Amount), 0)
     const averageAmount = totalAmount / totalTransactions
 
     // Process data for transaction chart
-    const transactionChartData = data.reduce((acc: any, transaction) => {
-      const date = transaction.Date.split(' ')[0] // Extract just the date part
+    const transactionChartData = data.reduce((acc: Record<string, ChartData>, transaction) => {
+      const date = transaction.Date.split(' ')[0]
       if (acc[date]) {
         acc[date].amount += parseFloat(transaction.Amount)
       } else {
@@ -28,8 +56,8 @@ export default function Home() {
     }, {})
 
     // Process data for category pie chart
-    const categoryData = data.reduce((acc: any, transaction) => {
-      const category = transaction.Description.split(' ')[0] // Use the first word of the description as category
+    const categoryData = data.reduce((acc: Record<string, number>, transaction) => {
+      const category = transaction.Description.split(' ')[0]
       if (acc[category]) {
         acc[category] += parseFloat(transaction.Amount)
       } else {
