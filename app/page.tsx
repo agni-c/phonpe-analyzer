@@ -6,6 +6,7 @@ import FileUpload from '@/components/FileUpload'
 import TransactionSummary from '@/components/TransactionSummary'
 import TransactionChart from '@/components/TransactionChart'
 import CategoryPieChart from '@/components/CategoryPieChart'
+import TransactionDataTable from '@/components/TransactionDataTable'
 
 interface Transaction {
   Date: string;
@@ -33,6 +34,7 @@ interface AnalysisData {
   summary: TransactionSummary;
   transactionChart: ChartData[];
   categoryPieChart: CategoryData[];
+  transactions: Transaction[];
 }
 
 export default function Home() {
@@ -70,6 +72,7 @@ export default function Home() {
       summary: { totalTransactions, totalAmount, averageAmount },
       transactionChart: Object.values(transactionChartData),
       categoryPieChart: Object.entries(categoryData).map(([name, value]) => ({ name, value })),
+      transactions: data,
     })
   }
 
@@ -98,6 +101,7 @@ export default function Home() {
               <TransactionChart data={analysisData.transactionChart} />
               <CategoryPieChart data={analysisData.categoryPieChart} />
             </div>
+            <TransactionDataTable data={analysisData.transactions} />
           </motion.div>
         )}
       </AnimatePresence>
