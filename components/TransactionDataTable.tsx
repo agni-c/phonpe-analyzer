@@ -25,6 +25,7 @@ import {
   TableRow,
   TableFooter,
 } from "@/components/ui/table"
+import { categorizeTransaction, getCategoryColor, type Category } from "@/utils/categorization"
 
 interface Transaction {
   Date: string
@@ -58,6 +59,33 @@ const columns: ColumnDef<Transaction>[] = [
           Description
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
+      )
+    },
+  },
+  {
+    id: "category",
+    accessorFn: (row) => categorizeTransaction(row.Description),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Category
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ getValue }) => {
+      const category = getValue() as Category
+      return (
+        <div className="flex items-center">
+          <div
+            className="w-2 h-2 rounded-full mr-2"
+            style={{ backgroundColor: getCategoryColor(category) }}
+          />
+          {category}
+        </div>
       )
     },
   },
@@ -122,6 +150,13 @@ export default function TransactionDataTable({ data }: TransactionDataTableProps
     ...filteredRows.map((row) => parseFloat(row.getValue("Amount")))
   )
 
+  // Add category-wise summary in the grid
+  const categoryTotals = filteredRows.reduce((acc: Record<string, number>, row) => {
+    const category = categorizeTransaction(row.getValue("Description"))
+    acc[category] = (acc[category] || 0) + parseFloat(row.getValue("Amount"))
+    return acc
+  }, {})
+
   return (
     <div className="w-full">
       <div className="flex items-center justify-between py-4">
@@ -177,6 +212,26 @@ export default function TransactionDataTable({ data }: TransactionDataTableProps
             }).format(minAmount)}
           </div>
         </div>
+      </div>
+
+      <div className="grid grid-cols-4 gap-4 mb-4">
+        {Object.entries(categoryTotals).map(([category, amount]) => (
+          <div key={category} className="rounded-lg border p-3">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: getCategoryColor(category as Category) }}
+              />
+              <div className="text-sm font-medium">{category}</div>
+            </div>
+            <div className="text-2xl font-bold">
+              {new Intl.NumberFormat("en-IN", {
+                style: "currency",
+                currency: "INR",
+              }).format(amount)}
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className="rounded-md border">
