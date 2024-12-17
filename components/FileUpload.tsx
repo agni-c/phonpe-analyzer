@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
 import { PDFParser } from './PDFParser'
+import { useTransactionProcessing } from '@/hooks/useTransactionProcessing'
 
 interface Transaction {
   Date: string;
@@ -17,13 +18,14 @@ interface Transaction {
   PaymentMethod?: string;
 }
 
-type FileUploadProps = {
-  onFileUpload: (data: Transaction[]) => void
+interface FileUploadProps {
+  onComplete: () => void;
 }
 
 type Stage = 'idle' | 'uploading' | 'parsing' | 'processing' | 'complete' | 'error'
 
-export default function FileUpload({ onFileUpload }: FileUploadProps) {
+export default function FileUpload({ onComplete }: FileUploadProps) {
+  const { processTransactions } = useTransactionProcessing()
   const [file, setFile] = useState<File | null>(null)
   const [stage, setStage] = useState<Stage>('idle')
   const [error, setError] = useState<string | null>(null)
@@ -53,7 +55,6 @@ export default function FileUpload({ onFileUpload }: FileUploadProps) {
     try {
       setProgress(25)
       console.log('Starting file upload...');
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate upload time
       
       setStage('parsing')
       setProgress(50)
@@ -63,7 +64,6 @@ export default function FileUpload({ onFileUpload }: FileUploadProps) {
       setStage('processing')
       setProgress(75)
       console.log('PDF parsed successfully. Processing data...');
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate processing time
       
       if (parsedData.length === 0) {
         throw new Error("No transactions found in the PDF. Please check if it's a valid PhonePe statement.")
@@ -72,7 +72,8 @@ export default function FileUpload({ onFileUpload }: FileUploadProps) {
       setStage('complete')
       setProgress(100)
       console.log('Data processing complete.');
-      onFileUpload(parsedData)
+      processTransactions(parsedData)
+      onComplete()
     } catch (error) {
       console.error('Error processing PDF:', error)
       setStage('error')

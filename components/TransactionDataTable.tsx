@@ -114,15 +114,15 @@ const columns: ColumnDef<Transaction>[] = [
 ]
 
 interface TransactionDataTableProps {
-  data: Transaction[]
+  transactions: Transaction[];
 }
 
-export default function TransactionDataTable({ data }: TransactionDataTableProps) {
+export default function TransactionDataTable({ transactions }: TransactionDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 
   const table = useReactTable({
-    data,
+    data: transactions,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -170,7 +170,7 @@ export default function TransactionDataTable({ data }: TransactionDataTableProps
         />
         <div className="flex gap-4 text-sm text-muted-foreground">
           <div>
-            Showing {filteredRows.length} of {data.length} transactions
+            Showing {filteredRows.length} of {transactions.length} transactions
           </div>
         </div>
       </div>

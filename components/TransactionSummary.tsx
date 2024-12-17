@@ -1,13 +1,11 @@
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-type TransactionSummaryProps = {
-  totalTransactions: number
-  totalAmount: number
-  averageAmount: number
+interface TransactionSummaryProps {
+  summary: TransactionSummary;
 }
 
-export default function TransactionSummary({ totalTransactions, totalAmount, averageAmount }: TransactionSummaryProps) {
+export default function TransactionSummary({ summary }: TransactionSummaryProps) {
   return (
     <motion.div 
       className="grid gap-4 md:grid-cols-3"
@@ -26,7 +24,7 @@ export default function TransactionSummary({ totalTransactions, totalAmount, ave
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 100, delay: 0.3 }}
           >
-            {totalTransactions}
+            {summary.totalTransactions}
           </motion.div>
         </CardContent>
       </Card>
@@ -41,7 +39,7 @@ export default function TransactionSummary({ totalTransactions, totalAmount, ave
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 100, delay: 0.4 }}
           >
-            ₹{totalAmount.toFixed(2)}
+            ₹{summary.totalAmount.toFixed(2)}
           </motion.div>
         </CardContent>
       </Card>
@@ -56,7 +54,7 @@ export default function TransactionSummary({ totalTransactions, totalAmount, ave
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 100, delay: 0.5 }}
           >
-            ₹{averageAmount.toFixed(2)}
+            ₹{summary.averageAmount.toFixed(2)}
           </motion.div>
         </CardContent>
       </Card>
